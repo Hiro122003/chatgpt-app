@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body className='bg-primary'>
+      <body>
         <Suspense fallback={<Loading />}>
           <GlobalState>{children}</GlobalState>
         </Suspense>

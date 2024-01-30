@@ -12,7 +12,10 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'custom-gradient':
+          'linear-gradient(90deg, #1D262E 0%, #063761 50%, #1D262E 100%)',
       },
+      backgroundColor: {},
       colors: {
         current: 'currentColor',
         transparent: 'transparent',
@@ -22,6 +25,7 @@ const config: Config = {
         primary: '#4A6CF7',
         yellow: '#FBB040',
         'body-color': '#959CB1',
+        'custom-blue': '#222f55',
       },
       screens: {
         xs: '450px',
