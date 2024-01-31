@@ -21,10 +21,11 @@ import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
   const router = useRouter();
-  const { rooms, setRooms, user, userId } = useGlobalContext();
+  const { rooms, setRooms, user, userId,setSelectedRoom } = useGlobalContext();
   // console.log(user, 'user');
   // console.log(userId, 'userId');
 
+  // サイドバーのルームの取得
   useEffect(() => {
     if (user) {
       const fetchRooms = async () => {
@@ -47,11 +48,11 @@ const Sidebar = () => {
       };
       fetchRooms();
     }
-  }, [userId,user]); //後にuserIdを追加する
+  }, [userId, user]); //後にuserIdを追加する
 
   // console.log(rooms, 'rooms');
 
-  // サブコレクションも取得する方法
+  // ルーム　サブコレクションも取得する方法
   // useEffect(() => {
   //   const fetchRooms = async () => {
   //     const roomCollectionRef = collection(db, "rooms");
@@ -72,12 +73,12 @@ const Sidebar = () => {
   //   fetchRooms();
   // }, []);
 
+  // ログアウト処理
   const handleLogout = () => {
     auth.signOut();
     router.push('/auth/login');
-  }
+  };
 
-  
   return (
     <div className="bg-custom-gradient h-full overflow-y-auto px-5 flex flex-col ">
       <div className="flex-grow ">
@@ -94,25 +95,17 @@ const Sidebar = () => {
               key={room.id}
               className="cursor-pointer border-b-2 text-slate-100
               text-wrap text-[2vh] lg:text-md lg:text-lg p-3 hover:bg-blue-500 hover:bg-opacity-500 transition ease-in-out duration-500"
+              onClick = {() => setSelectedRoom(room.id)}
             >
               {room.name}
             </li>
           ))}
-
-          {/* <li className="cursor-pointer border-b-2 text-slate-100 text-md p-3 hover:bg-blue-500 hover:bg-opacity-500 transition ease-in-out duration-500">
-            Room 1
-          </li>
-          <li className="cursor-pointer border-b-2 text-slate-100 text-md p-3 hover:bg-blue-500 hover:bg-opacity-500 transition ease-in-out duration-500">
-            Room 1
-          </li>
-          <li className="cursor-pointer border-b-2 text-slate-100 text-md p-3 hover:bg-blue-500 hover:bg-opacity-500 transition ease-in-out duration-500">
-            Room 1
-          </li> */}
         </ul>
       </div>
-      <div 
-      onClick={handleLogout}
-      className="flex items-center justify-evenly mb-2 cursor-pointer p-4 text-slate-100 hover:bg-slate-700 duration-150 rounded-md">
+      <div
+        onClick={handleLogout}
+        className="flex items-center justify-evenly mb-2 cursor-pointer p-4 text-slate-100 hover:bg-slate-700 duration-150 rounded-md"
+      >
         <BiLogOut size={24} />
         <span className="whitespace-nowrap sm:text-sm lg:text-xl">
           ログアウト

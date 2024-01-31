@@ -5,6 +5,7 @@ import {
   ReactNode,
   SetStateAction,
   createContext,
+  use,
   useContext,
   useEffect,
   useState,
@@ -12,6 +13,8 @@ import {
 import { Room } from '../utils/type';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../firebase';
+import { Router } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 type ContextType = {
   loading: boolean;
@@ -50,17 +53,22 @@ export const GlobalState = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
 
+  const router = useRouter()
+
+  // ユーザ情報の取得(user認証なければログインページへ遷移)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
         setUserId(user.uid);
       }else {
-        return null;
+        router.push('/auth/login')
       }
     });
     return () => unsubscribe();
   }, []);
+
+  
 
   // console.log(user, 'user')
   // console.log(userId, 'userId')
