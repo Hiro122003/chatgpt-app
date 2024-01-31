@@ -13,32 +13,43 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import { GoPlusCircle } from 'react-icons/go';
-import { db } from '../../../firebase';
+import { auth, db } from '../../../firebase';
 import { Room } from '../utils/type';
-import { GlobalContext, useGlobalContext } from '../context';
+import { useGlobalContext } from '../context';
+import { unsubscribe } from 'diagnostics_channel';
+import { useRouter } from 'next/navigation';
 
 const Sidebar = () => {
-  const { rooms, setRooms } = useGlobalContext();
-  useEffect(() => {
-    const fetchRooms = async () => {
-      const roomCollectionRef = collection(db, 'rooms');
-      const q = query(
-        roomCollectionRef,
-        where('userId', '==', 'eLUqXXioHPhL4FW'),
-        orderBy('createdAt', 'desc')
-      );
+  const router = useRouter();
+  const { rooms, setRooms, user, userId } = useGlobalContext();
+  // console.log(user, 'user');
+  // console.log(userId, 'userId');
 
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const newRooms: Room[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-          createdAt: doc.data().createdAt,
-        }));
-        setRooms(newRooms);
-      });
-    };
-    fetchRooms();
-  }, []); //後にuserIdを追加する
+  useEffect(() => {
+    if (user) {
+      const fetchRooms = async () => {
+        const roomCollectionRef = collection(db, 'rooms');
+        const q = query(
+          roomCollectionRef,
+          where('userId', '==', userId),
+          orderBy('createdAt', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const newRooms: Room[] = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            name: doc.data().name,
+            createdAt: doc.data().createdAt,
+          }));
+          setRooms(newRooms);
+        });
+        return () => unsubscribe();
+      };
+      fetchRooms();
+    }
+  }, [userId,user]); //後にuserIdを追加する
+
+  // console.log(rooms, 'rooms');
 
   // サブコレクションも取得する方法
   // useEffect(() => {
@@ -61,6 +72,12 @@ const Sidebar = () => {
   //   fetchRooms();
   // }, []);
 
+  const handleLogout = () => {
+    auth.signOut();
+    router.push('/auth/login');
+  }
+
+  
   return (
     <div className="bg-custom-gradient h-full overflow-y-auto px-5 flex flex-col ">
       <div className="flex-grow ">
@@ -93,7 +110,9 @@ const Sidebar = () => {
           </li> */}
         </ul>
       </div>
-      <div className="flex items-center justify-evenly mb-2 cursor-pointer p-4 text-slate-100 hover:bg-slate-700 duration-150 rounded-md">
+      <div 
+      onClick={handleLogout}
+      className="flex items-center justify-evenly mb-2 cursor-pointer p-4 text-slate-100 hover:bg-slate-700 duration-150 rounded-md">
         <BiLogOut size={24} />
         <span className="whitespace-nowrap sm:text-sm lg:text-xl">
           ログアウト
